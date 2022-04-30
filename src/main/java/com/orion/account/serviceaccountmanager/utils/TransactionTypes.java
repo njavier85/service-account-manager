@@ -1,6 +1,6 @@
 package com.orion.account.serviceaccountmanager.utils;
 
-public enum TransactionTypes {
+public  enum TransactionTypes {
+    DEPOSIT,DEBIT;
 
-    DEPOSIT,DEBIT
 }

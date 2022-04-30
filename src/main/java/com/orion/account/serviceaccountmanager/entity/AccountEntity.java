@@ -9,7 +9,8 @@ import java.util.List;
 public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int accountId;
+    @Column(nullable = false)
+    private Integer accountId;
 
     public List<TransactionEntity> getTransactionEntityEntityList() {
         return transactionEntityEntityList;
@@ -44,11 +45,11 @@ public class AccountEntity {
         this.balance = balance;
     }
 
-    public int getAccountId() {
+    public Integer getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
+    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
 

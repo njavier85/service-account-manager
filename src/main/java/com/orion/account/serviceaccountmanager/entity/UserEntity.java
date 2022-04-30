@@ -10,7 +10,7 @@ public class UserEntity {
 
     @Id
     @Column
-    private int userId;
+    private Integer userId;
 
     @Column
     private String name;
@@ -25,11 +25,11 @@ public class UserEntity {
     )
     private List<AccountEntity> accountEntityList = new ArrayList<AccountEntity>();
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 

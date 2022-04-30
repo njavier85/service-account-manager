@@ -12,12 +12,14 @@ public class AccountRequestDTO {
 
     private Double credit;
 
+    private Integer accountId;
 
     private List<TransactionRequestDTO> transactionRequestDTOList = new ArrayList<TransactionRequestDTO>();
 
-    public AccountRequestDTO(Integer customerId, Double credit,List<TransactionRequestDTO> transactionRequestDTOList) {
+    public AccountRequestDTO(Integer accountId,Integer customerId, Double credit,List<TransactionRequestDTO> transactionRequestDTOList) {
         this.customerId = customerId;
         this.credit = credit;
+        this.accountId = accountId;
         this.transactionRequestDTOList =transactionRequestDTOList;
     }
 

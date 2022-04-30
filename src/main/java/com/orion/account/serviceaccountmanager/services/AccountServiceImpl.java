@@ -1,40 +1,63 @@
 package com.orion.account.serviceaccountmanager.services;
 
 import com.orion.account.serviceaccountmanager.entity.AccountEntity;
-import com.orion.account.serviceaccountmanager.entity.TransactionEntity;
 import com.orion.account.serviceaccountmanager.entity.UserEntity;
+import com.orion.account.serviceaccountmanager.exception.AccountException;
+import com.orion.account.serviceaccountmanager.exception.UserException;
+import com.orion.account.serviceaccountmanager.properties.AccountControllerPropertiesMessages;
 import com.orion.account.serviceaccountmanager.repository.AccountEntityRepository;
 import com.orion.account.serviceaccountmanager.repository.UserEntityRepository;
 import com.orion.account.serviceaccountmanager.utils.TransactionTypes;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
-import java.time.LocalDate;
-import java.util.UUID;
-
+@Slf4j
 @Service
 public class AccountServiceImpl implements AccountService{
 
-    @Autowired
     private AccountEntityRepository accountRepository;
-    @Autowired
-    private UserEntityRepository userEntityRepository;
-
-    @Autowired
     private TransactionService transactionService;
-    public void createAccount(int user_id, double credit){
+    private UserEntityRepository userEntityRepository;
+    private AccountControllerPropertiesMessages messagesReturnProperties;
 
-        UserEntity userEntity = userEntityRepository.findById(user_id).get();
+    public AccountServiceImpl(AccountEntityRepository accountRepository,UserEntityRepository userEntityRepository,
+                              TransactionService transactionService, AccountControllerPropertiesMessages messagesReturnProperties) {
+        this.accountRepository = accountRepository;
+        this.transactionService = transactionService;
+        this.messagesReturnProperties = messagesReturnProperties;
+        this.userEntityRepository = userEntityRepository;
+    }
 
-        AccountEntity accountEntity = new AccountEntity(credit,userEntity);
+    public AccountEntity save(Double credit, Integer userId){
 
-        if(credit>0){
-            UUID uuid = UUID.randomUUID();
-            TransactionEntity transactionEntity = new TransactionEntity(uuid.toString(),accountEntity,credit, LocalDate.now(), TransactionTypes.DEPOSIT.name());
-            accountEntity.getTransactionEntityEntityList().add(transactionEntity);
+        log.info("m=save, customer_id:{} , credit:{}",userId,credit);
+
+        Optional<UserEntity> userEntityOptional = userEntityRepository.findById(userId);
+        if(userEntityOptional.isPresent()){
+            AccountEntity accountEntity = new AccountEntity(credit,userEntityOptional.get());
+            return accountRepository.save(accountEntity);
+        }else{
+            log.error(messagesReturnProperties.getCustomernotfound());
+            throw new UserException();
         }
+    }
 
-        accountRepository.save(accountEntity);
+    public void createAccount(int user_id, double credit) throws AccountException, UserException {
 
+        log.info("m=createAccount, customer_id:{} , credit:{}",user_id,credit);
+
+        try{
+            AccountEntity accountEntity = this.save(0.0,user_id);
+            if(credit>0){
+                Optional<String> optional = transactionService.generateTransaction(accountEntity.getAccountId(),credit, TransactionTypes.DEPOSIT.name());
+                if(optional.isEmpty()){
+                    log.error(messagesReturnProperties.getTransactionnotcreated());
+                }
+            }
+        }catch(Exception e){
+            log.error(e.getMessage());
+            throw new AccountException();
+        }
     }
 }

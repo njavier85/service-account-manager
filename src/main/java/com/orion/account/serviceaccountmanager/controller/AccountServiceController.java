@@ -3,16 +3,15 @@ package com.orion.account.serviceaccountmanager.controller;
 
 import com.orion.account.serviceaccountmanager.dto.AccountRequestDTO;
 import com.orion.account.serviceaccountmanager.dto.ErrorResponseDTO;
-import com.orion.account.serviceaccountmanager.dto.UserDto;
+import com.orion.account.serviceaccountmanager.exception.AccountException;
+import com.orion.account.serviceaccountmanager.exception.UserException;
+import com.orion.account.serviceaccountmanager.properties.AccountControllerPropertiesMessages;
 import com.orion.account.serviceaccountmanager.services.AccountService;
 import com.orion.account.serviceaccountmanager.services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 
 @Slf4j
@@ -20,31 +19,39 @@ import java.util.Optional;
 @RequestMapping("/api/account")
 public class AccountServiceController {
 
-    @Autowired
     private UserService userService;
-    @Autowired
     private AccountService accountService;
+    private AccountControllerPropertiesMessages messagesReturnProperties;
+
+    public AccountServiceController(UserService userService, AccountService accountService, AccountControllerPropertiesMessages messagesReturnProperties) {
+        this.userService = userService;
+        this.accountService = accountService;
+        this.messagesReturnProperties = messagesReturnProperties;
+    }
 
     @PostMapping("/create-account")
-    public ResponseEntity createAccount(@RequestBody AccountRequestDTO accountRequestDTO) {
+    public ResponseEntity createNewAccount(@RequestBody AccountRequestDTO accountRequestDTO) {
+
+        log.info("m=createNewAccount, customer_id:{} , credit:{}",accountRequestDTO.getCustomerId(),accountRequestDTO.getCredit());
 
         if(!validAccountRequest(accountRequestDTO)){
-            ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO("Invalid Parameters");
-            return ResponseEntity.status(HttpStatus.OK).body(errorResponseDTO);
+            ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(messagesReturnProperties.getMessageparamtererror());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDTO);
         }
 
-        Optional<UserDto> optionalUserDto = userService.getUserbyId(accountRequestDTO.getCustomerId());
-        if(optionalUserDto.isEmpty()){
-            ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO("Customer Not Found");
-            return ResponseEntity.status(HttpStatus.OK).body(errorResponseDTO);
-        }else{
+        try{
             accountService.createAccount(accountRequestDTO.getCustomerId(),accountRequestDTO.getCredit());
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }catch (AccountException e){
+            ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(messagesReturnProperties.getAccountnotcreated());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDTO);
+        }catch (UserException ue){
+            ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO(messagesReturnProperties.getAccountnotcreated());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponseDTO);
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     private boolean validAccountRequest(AccountRequestDTO accountRequestDTO) {
-
         if(accountRequestDTO.getCredit()!=null && accountRequestDTO.getCustomerId()!=null && accountRequestDTO.getCredit()>=0){
             return true;
         }

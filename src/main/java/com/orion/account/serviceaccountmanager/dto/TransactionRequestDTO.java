@@ -1,6 +1,7 @@
 package com.orion.account.serviceaccountmanager.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.orion.account.serviceaccountmanager.utils.TransactionTypes;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class TransactionRequestDTO {
@@ -13,12 +14,20 @@ public class TransactionRequestDTO {
 
     private String type;
 
+    public TransactionRequestDTO(Integer accountId, Double amount, String type) {
+        this.accountId = accountId;
+        this.amount = amount;
+        this.type = type;
+    }
 
-    public TransactionRequestDTO(Integer accountId, Double amount, String type,String transactionId) {
+    public TransactionRequestDTO(Integer accountId, Double amount, String type, String transactionId) {
         this.accountId = accountId;
         this.amount = amount;
         this.type = type;
         this.transactionId = transactionId;
+    }
+
+    public TransactionRequestDTO() {
     }
 
     public String getType() {

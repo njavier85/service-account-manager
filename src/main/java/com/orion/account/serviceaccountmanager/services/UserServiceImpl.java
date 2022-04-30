@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private UserEntityRepository userRepository;
 
-    public List<UserDto> getAllUsers(){
+    public Optional<List<UserDto>> getAllUsers(){
 
         List<UserEntity> userEntityList = new ArrayList<UserEntity>();
 
@@ -27,9 +27,12 @@ public class UserServiceImpl implements UserService{
 
         userRepository.findAll().forEach(userEntity -> userEntityList.add(userEntity));
 
-        List<UserDto> userDtoList = userEntityList.stream().map(p->new UserDto(p.getUserId(), p.getName(), p.getSurname())).collect(Collectors.toList());
+        List<UserDto> userDtoList = userEntityList.stream().map(p->new UserDto(p.getUserId(), p.getName(), p.getSurname(),
+                p.getAccountEntityList().stream().map(ac->new AccountRequestDTO(ac.getAccountId(),ac.getUserEntity().getUserId(),ac.getBalance(),
+                        ac.getTransactionEntityEntityList().stream().map(t->new TransactionRequestDTO(t.getAccountEntity().getAccountId(),t.getAmount(),t.getType(),t.getTransactionId())).collect(Collectors.toList())
+                )).collect(Collectors.toList()))).collect(Collectors.toList());
 
-        return userDtoList;
+        return Optional.of(userDtoList);
     }
 
     public Optional<UserDto> getUserbyId(int userId){
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService{
             UserEntity userEntity = userRepository.findById(userId).get();
             if(userEntity!=null){
                 UserDto userDto = new UserDto(userEntity.getUserId(), userEntity.getName(), userEntity.getSurname(),
-                        userEntity.getAccountEntityList().stream().map(p->new AccountRequestDTO(p.getUserEntity().getUserId(),p.getBalance(),
+                        userEntity.getAccountEntityList().stream().map(p->new AccountRequestDTO(p.getAccountId(),p.getUserEntity().getUserId(),p.getBalance(),
                                 p.getTransactionEntityEntityList().stream().map(t->new TransactionRequestDTO(t.getAccountEntity().getAccountId(),t.getAmount(),t.getType(),t.getTransactionId())).collect(Collectors.toList())
                                 )).collect(Collectors.toList()));
                 return Optional.of(userDto);
