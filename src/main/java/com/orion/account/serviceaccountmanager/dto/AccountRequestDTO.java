@@ -16,7 +16,12 @@ public class AccountRequestDTO {
 
     private List<TransactionRequestDTO> transactionRequestDTOList = new ArrayList<TransactionRequestDTO>();
 
-    public AccountRequestDTO(Integer accountId,Integer customerId, Double credit,List<TransactionRequestDTO> transactionRequestDTOList) {
+    public AccountRequestDTO(Integer customerId, Double credit) {
+        this.customerId = customerId;
+        this.credit = credit;
+    }
+
+    public AccountRequestDTO(Integer accountId, Integer customerId, Double credit, List<TransactionRequestDTO> transactionRequestDTOList) {
         this.customerId = customerId;
         this.credit = credit;
         this.accountId = accountId;

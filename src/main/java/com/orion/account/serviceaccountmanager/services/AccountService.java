@@ -5,7 +5,7 @@ import com.orion.account.serviceaccountmanager.exception.AccountException;
 
 public interface AccountService {
 
-    public void createAccount(int user_id, double credit) throws AccountException;
+    public void createAccount(Integer user_id, Double credit) throws AccountException;
 
     public AccountEntity save(Double credit, Integer userId);
 }

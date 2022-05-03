@@ -19,7 +19,6 @@ import java.util.Optional;
 @Slf4j
 public class TransactionServiceImpl implements TransactionService{
 
-
     private AccountEntityRepository accountRepository;
 
     private TransactionClient transactionClient;

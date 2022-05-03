@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService{
         }
     }
 
-    public void createAccount(int user_id, double credit) throws AccountException, UserException {
+    public void createAccount(Integer user_id, Double credit) throws AccountException, UserException {
 
         log.info("m=createAccount, customer_id:{} , credit:{}",user_id,credit);
 

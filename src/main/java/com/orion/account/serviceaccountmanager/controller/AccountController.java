@@ -17,14 +17,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/account")
-public class AccountServiceController {
+public class AccountController {
 
-    private UserService userService;
     private AccountService accountService;
     private AccountControllerPropertiesMessages messagesReturnProperties;
 
-    public AccountServiceController(UserService userService, AccountService accountService, AccountControllerPropertiesMessages messagesReturnProperties) {
-        this.userService = userService;
+    public AccountController(AccountService accountService, AccountControllerPropertiesMessages messagesReturnProperties) {
         this.accountService = accountService;
         this.messagesReturnProperties = messagesReturnProperties;
     }

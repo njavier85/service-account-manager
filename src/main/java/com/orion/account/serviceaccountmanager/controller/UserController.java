@@ -49,7 +49,6 @@ public class UserController {
         }else{
             ErrorResponseDTO errorResponseDTO = new ErrorResponseDTO("User not Found");
             return ResponseEntity.status(HttpStatus.OK).body(errorResponseDTO);
-
         }
     }
 }
