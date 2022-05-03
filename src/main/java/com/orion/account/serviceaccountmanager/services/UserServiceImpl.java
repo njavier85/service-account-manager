@@ -23,8 +23,6 @@ public class UserServiceImpl implements UserService{
 
         List<UserEntity> userEntityList = new ArrayList<UserEntity>();
 
-        Iterable list = userRepository.findAll();
-
         userRepository.findAll().forEach(userEntity -> userEntityList.add(userEntity));
 
         List<UserDto> userDtoList = userEntityList.stream().map(p->new UserDto(p.getUserId(), p.getName(), p.getSurname(),
